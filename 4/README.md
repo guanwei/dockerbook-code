@@ -79,23 +79,23 @@ $ touch Dockerfile
 
 基于Dockerfile构建新镜像
 ```
-$ sudo docker build -t="jamtur01/static_web" .
+$ sudo docker build -t jamtur01/static_web .
 ```
 
 在构建时为镜像设置标签
 ```
-$ sudo docker build -t="jamtur01/static_web:v1" .
+$ sudo docker build -t jamtur01/static_web:v1 .
 ```
 
 从Git仓库构建Docker镜像
 ```
-$ sudo docker build -t="jamtur01/static_web:v1" \
+$ sudo docker build -t jamtur01/static_web:v1 \
   git@github.com:jamtur01/docker-static_web
 ```
 
 通过`-f`标志指定Dockerfile的位置
 ```
-$ sudo docker build -t="jamtur01/static_web" -f path-to-file
+$ sudo docker build -t jamtur01/static_web -f path-to-file
 ```
 
 基于最后的成功步骤创建创建新容器
@@ -105,7 +105,7 @@ $ sudo docker run -it 997485f46ec4 /bin/bash
 
 忽略Dockerfile的构建缓存
 ```
-$ sudo docker build --no-cache -t="jamtur01/static_web" .
+$ sudo docker build --no-cache -t jamtur01/static_web .
 ```
 
 Ubuntu系统的Dockerfile模板
@@ -124,7 +124,7 @@ ENV REFRESHED_AT 2016-06-01
 RUN yum -q makecache
 ```
 
-查看镜像如何构建出来的
+查看镜像的构建历史
 ```
 $ sudo docker history 22d47c8cb6e5
 ```

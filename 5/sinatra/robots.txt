@@ -1,0 +1,2 @@
+Sitemap: http://dockerbook.com/sitemap.xml
+User-agent: *
