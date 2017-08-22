@@ -154,3 +154,47 @@ $ sudo apt-get install -y redis-tools
 $ redis-cli -h 127.0.0.1 -p 49161
 ```
 
+查看docker0网络接口
+```
+$ ip a show docker0
+```
+
+查看Redis容器的IP地址
+```
+$ sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' redis
+```
+
+#### Docker Networking
+
+创建Docker网络
+```
+$ sudo docker network create app
+```
+
+查看app网络
+```
+$ sudo docker network inspect app
+```
+
+列出Docker的所有网络
+```
+$ sudo docker network ls
+```
+
+删除一个Docker网络
+```
+$ sudo docker network rm app
+```
+
+在Docker网络中创建Redis容器
+```
+$ sudo docker -d --net=app --name db jamtur01/redis
+```
+
+链接redis容器
+```
+$ cd sinatra/webapps
+$ sudo docker run -p 4567 \
+  --net=app --name webapp -t -i \
+  -v $PWD/webapp:/opt/webapp jamtur01/sinatra \
+  /bin/bash
