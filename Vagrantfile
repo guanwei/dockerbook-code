@@ -36,8 +36,12 @@ Vagrant.configure("2") do |config|
       end
 
       host.vm.provision "docker" do |d|
-        d.build_image "/vagrant/5/sinatra/redis", args: "-t redis --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
-        d.run "redis", args: "-p 6379:6379"
+        #d.build_image "/vagrant/5/sinatra/redis", args: "-t redis --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
+        #d.run "redis", args: "-p 6379:6379"
+        #d.build_image "/vagrant/5/sinatra", args: "-t sinatra --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
+        #d.run "sinatra", args: "-p 4567:4567 -v /vagrant/5/sinatra/webapp_redis:/opt/webapp --link redis:db"
+        d.build_image "/vagrant/5/jenkins", args: "-t jenkins --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
+        d.run "jenkins", args: "-p 8080:8080 -v /var/jenkins_home:/var/jenkins_home --privileged"
       end
   
       host.vm.provision "shell", path: "provision.sh"

@@ -164,6 +164,19 @@ $ ip a show docker0
 $ sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' redis
 ```
 
+通过`--link`标志创建两个容器间的父子连接,这个例子中，新容器连接到redis容器，并使用db作为别名
+```
+$ sudo docker run -p 4567:4567 \
+  --name webapp --link redis:db \
+  -v $PWD/webapp:/opt/webapp jamtur01/sinatra
+```
+
+在宿主机上使用curl命令测试Sinatra应用程序
+```
+$ curl -i -H 'Accept: application/json' -d 'name=Foo&status=Bar' http://localhost:4567/json
+$ curl -i http://localhost:4567/json
+```
+
 #### Docker Networking
 
 创建Docker网络
@@ -195,6 +208,8 @@ $ sudo docker -d --net=app --name db jamtur01/redis
 ```
 $ cd sinatra/webapps
 $ sudo docker run -p 4567 \
-  --net=app --name webapp -t -i \
-  -v $PWD/webapp:/opt/webapp jamtur01/sinatra \
-  /bin/bash
+  --net=app --name webapp \
+  -v $PWD/webapp:/opt/webapp jamtur01/sinatra
+```
+
+

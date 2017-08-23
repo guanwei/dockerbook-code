@@ -1,0 +1,7 @@
+junit
+git
+git-client
+ssh-slaves
+greenballs
+chucknorris
+ws-cleanup

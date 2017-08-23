@@ -2,9 +2,12 @@ require "rubygems"
 require "sinatra"
 require "json"
 require "redis"
+#require "uri"
 
 class App < Sinatra::Application
 
+      #uri = URI.parse(ENV['DB_PORT'])
+      #redis = Redis.new(:host => uri.host, :port => uri.port)
       redis = Redis.new(:host => 'db', :port => '6379')
 
       set :bind, '0.0.0.0'
