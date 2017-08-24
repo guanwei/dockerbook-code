@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
       config.proxy.no_proxy = "127.0.0.1,localhost,.philips.com,.philips.com.cn"
     end
 
-    config.vm.provision "shell", path: "set-apt-mirror.sh"
+    #config.vm.provision "shell", path: "set-apt-mirror.sh"
   
     config.vm.provision "docker" do |d|
         d.post_install_provision "shell", path: "set-docker-mirror.sh"
@@ -35,15 +35,15 @@ Vagrant.configure("2") do |config|
         v.cpus = 1
       end
 
+      host.vm.provision "shell", path: "provision.sh"
+
       host.vm.provision "docker" do |d|
         #d.build_image "/vagrant/5/sinatra/redis", args: "-t redis --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
         #d.run "redis", args: "-p 6379:6379"
         #d.build_image "/vagrant/5/sinatra", args: "-t sinatra --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
         #d.run "sinatra", args: "-p 4567:4567 -v /vagrant/5/sinatra/webapp_redis:/opt/webapp --link redis:db"
         d.build_image "/vagrant/5/jenkins", args: "-t jenkins --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
-        d.run "jenkins", args: "-p 8080:8080 -v /var/jenkins_home:/var/jenkins_home --privileged"
+        d.run "jenkins", args: "-p 8080:8080 -v /data/jenkins:/var/jenkins_home --privileged -e TRY_UPGRADE_IF_NO_MARKER=true"
       end
-  
-      host.vm.provision "shell", path: "provision.sh"
     end
   end

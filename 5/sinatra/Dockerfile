@@ -9,4 +9,4 @@ RUN mkdir -p /opt/webapp
 
 EXPOSE 4567
 
-ENTRYPOINT ["/opt/webapp/bin/webapp"]
+CMD ["/opt/webapp/bin/webapp"]

@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-sudo apt-get -qq update && sudo apt-get -qq install redis-tools
+mkdir -p /data/jenkins && chown -R 1000 /data/jenkins
+apt-get -qq update && apt-get -qq install redis-tools
