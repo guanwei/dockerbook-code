@@ -212,4 +212,27 @@ $ sudo docker run -p 4567 \
   -v $PWD/webapp:/opt/webapp jamtur01/sinatra
 ```
 
+### Docker用于持续集成
 
+#### 构建Jenkins和Docker服务器
+
+构建Docker-Jenkins镜像
+```
+$ sudo docker build -t jamtur01/dockerjenkins .
+```
+
+运行Docker-Jenkins镜像
+```
+$ sudo docker run -p 8080:8080 --name jenkins --privileged -d jamtur01/dockerjenkins
+```
+
+检查Docker Jenkins容器的日志
+```
+$ sudo docker logs jenkins
+```
+
+#### 创建新的Jenkins作业
+
+创建`Docker_test_job`自由风格的软件项目，点击Advanced Project Options下的Advanced...按钮，设置Use Custom workspace为`/tmp/jenkins-buildenv/${JOB_NAME}/workspace`，
+选择Git并指定测试仓库`https://github.com/jamtur01/docker-jenkins-sample.git`，
+点击`Add Build Step`增加一个构建步骤，选择`Execute shell`，使用定义的脚本来启动测试Docker
