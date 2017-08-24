@@ -3,7 +3,7 @@ MAINTAINER james@example.com
 ENV REFRESHED_AT 2016-06-01
 
 USER root
-RUN apt-get -qq update && apt-get install -qq sudo
+RUN apt-get -qq update && apt-get -qq install sudo
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 RUN curl -sSL https://get.docker.com/ | sh

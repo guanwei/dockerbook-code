@@ -1,0 +1,5 @@
+---
+proxy:
+  #http: "http://180.166.223.108:10015/"
+  #https: "http://180.166.223.108:10015/"
+  #no_proxy: "127.0.0.1,localhost,.philips.com,.philips.com.cn"
