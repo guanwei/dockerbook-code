@@ -168,7 +168,7 @@ $ sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' redis
 ```
 $ sudo docker run -p 4567:4567 \
   --name webapp --link redis:db \
-  -v $PWD/webapp:/opt/webapp jamtur01/sinatra
+  -v $PWD/webapp_redis:/opt/webapp jamtur01/sinatra
 ```
 
 在宿主机上使用curl命令测试Sinatra应用程序
@@ -201,15 +201,14 @@ $ sudo docker network rm app
 
 在Docker网络中创建Redis容器
 ```
-$ sudo docker -d --net=app --name db jamtur01/redis
+$ sudo docker run -d --net=app --name db jamtur01/redis
 ```
 
 链接redis容器
 ```
-$ cd sinatra/webapps
 $ sudo docker run -p 4567 \
   --net=app --name webapp \
-  -v $PWD/webapp:/opt/webapp jamtur01/sinatra
+  -v $PWD/webapp_redis:/opt/webapp jamtur01/sinatra
 ```
 
 ### Docker用于持续集成
@@ -233,6 +232,17 @@ $ sudo docker logs jenkins
 
 #### 创建新的Jenkins作业
 
-创建`Docker_test_job`自由风格的软件项目，点击Advanced Project Options下的Advanced...按钮，设置Use Custom workspace为`/tmp/jenkins-buildenv/${JOB_NAME}/workspace`，
-选择Git并指定测试仓库`https://github.com/jamtur01/docker-jenkins-sample.git`，
-点击`Add Build Step`增加一个构建步骤，选择`Execute shell`，使用定义的脚本来启动测试Docker
+第一次运行需要解锁Jenkins
+```
+$ sudo docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+创建`Docker_test_job`自由风格的软件项目，选择Git并指定测试仓库`https://github.com/jamtur01/docker-jenkins-sample.git`，选择`Delete workspace before build starts`在构建前删除工作空间，点击`Add Build Step`增加一个构建步骤，选择`Execute shell`，使用定义的脚本来启动测试Docker，点击`Add post-build action`加入构建后的动作，加入一个`Publish JUnit test result report`公布JUnit测试结果报告，指定`Test report XMLs`测试报告的XML文件为`spec/reports/*.xml`，最后点击Save保存作业
+
+#### 运行Jenkins作业
+
+点击`Build Now`按钮，运行Jenkins作业，`Build History`中会出现新的构建，点击该构建，再点击`Console Output`查看控制台输出
+
+#### 创建多配置作业
+
+创建`Docker_matrix_job`多配置项目，选择Git并指定测试仓库`https://github.com/jamtur01/docker-jenkins-sample.git`，点击`Add Axis`按钮，并选择`User-defined Axis`，定义名字为`OS`，值为`centos debian ubuntu`，选择`Delete workspace before build starts`在构建前删除工作空间，点击`Add Build Step`增加一个构建步骤，选择`Execute shell`，使用定义的脚本来启动测试Docker，点击`Add post-build action`加入构建后的动作，加入一个`Publish JUnit test result report`公布JUnit测试结果报告，指定`Test report XMLs`测试报告的XML文件为`spec/reports/*.xml`，最后点击Save保存作业
