@@ -303,3 +303,56 @@ $ sudo docker run -d --name nodeapp -p 3000:3000 --net express jamtur01/nodejs
 $ sudo docker logs nodeapp
 ```
 
+在Docker宿主机上访问nodeapp网站,已正常运行
+
+#### 捕获应用日志
+
+创建Logstash的Dockerfile
+```
+$ mkdir logstash && cd logstash
+$ touch Dockerfile
+```
+
+创建Logstash配置文件
+```
+input {
+  file {
+    type => "syslog"
+    path => ["/var/log/nodeapp/nodeapp.log", "/var/log/redis/redis-server.log"]
+  }
+}
+output {
+  stdout {
+    codec => rubydebug
+  }
+}
+```
+
+构建Logstash镜像
+```
+$ sudo docker build -t jamtur01/logstash .
+```
+
+启动Logstash容器
+```
+$ sudo docker run -d --name logstash --volumes-from redis_primary --volumes-from nodeapp jamtur01/logstash
+```
+
+查看Logstash容器的日志
+```
+$ sudo docker logs -f logstash
+```
+
+刷新Web应用，就能在Logstash容器的日志中看到这个事件
+
+#### 不使用SSH管理Docker容器
+
+使用docker kill发送信号
+```
+$ sudo docker kill -s <signal> <container>
+```
+
+获取容器的进程ID
+```
+$ sudo docker inspect --format '{{.State.Pid}}' <container>
+```
