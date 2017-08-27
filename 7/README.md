@@ -84,8 +84,74 @@ redis:
 $ sudo docker-compose up
 ```
 
-已守护进程方式运行Compose
+以守护进程方式运行Compose
 ```
 $ sudo docker-compose up -d
+```
+
+查看服务的运行状态
+```
+$ sudo docker-compose ps
+```
+
+查看服务的日志事件
+```
+$ sudo docker-compose logs
+```
+
+停止正在运行的服务
+```
+$ sudo docker-compose stop
+```
+
+启动这些服务
+```
+$ sudo docker-compose start
+```
+
+删除这些服务（必须服务停止的状态下）
+```
+$ sudo docker-compose rm
+```
+
+### Consul、服务发现和Docker
+
+Docker主要关注分布式应用以及面向服务架构与微服务架构，Consul是一个使用一致性算法的特殊数据存储器
+
+- 创建Consul服务的Docker镜像
+- 构建3台运行Docker的宿主机，并在每台上运行一个Consul，提供一个分布式环境
+- 构建服务，并将其注册到Consul，然后从其他服务查询该数据
+
+#### 构建Consul镜像
+
+创建Consul配置文件
+```
+{
+  "data_dir": "/data",
+  "ui_dir": "/webui",
+  "client_addr": "0.0.0.0",
+  "ports": {
+    "dns": 53
+  },
+  "recursor": "8.8.8.8"
+}
+```
+
+创建Consul的Dockerfile
+```
+$ mkdir consul && cd consul
+$ touch Dockerfile
+```
+
+构建Consul镜像
+```
+$ sudo docker build -t="jamtur01/consul" .
+```
+
+#### 在本地测试Consul容器
+
+执行一个本地Consul节点
+```
+$ sudo docker run -p 8500:8500 -p 53:53/udp -h node1 jamtur01/consul -server -bootstrap
 ```
 
