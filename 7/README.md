@@ -155,3 +155,22 @@ $ sudo docker build -t="jamtur01/consul" .
 $ sudo docker run -p 8500:8500 -p 53:53/udp -h node1 jamtur01/consul -server -bootstrap
 ```
 
+`-server`告诉Consul代理以服务器的模式运行
+`-bootstrap`告诉Consul本节点可以自选举为集群领导者
+
+#### 使用Docker运行Consul集群
+
+拉取Consul镜像
+```
+$ sudo docker pull jamtur01/consul
+```
+
+查看eth0的IP地址
+```
+$ ifconfig eth0 | awk -F ' *|:' '/inet addr/{print $4}'
+```
+
+查看docker0的IP地址
+```
+$ ip addr show docker0
+```
