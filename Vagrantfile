@@ -6,44 +6,52 @@ require 'yaml'
 settings = YAML.load_file 'vagrant.yml'
 
 Vagrant.configure("2") do |config|
-  required_plugins = %w( vagrant-vbguest vagrant-disksize vagrant-proxyconf vagrant-docker-compose )
-  installed_plugins = 0
-  required_plugins.each do |plugin|
-    unless Vagrant.has_plugin?(plugin)
-      system("vagrant plugin install vagrant-docker-compose")
-      installed_plugins += 1
+  required_plugins = %w(vagrant-timezone vagrant-proxyconf vagrant-docker-compose)
+  plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+  if not plugins_to_install.empty?
+    puts "Installing plugins: #{plugins_to_install.join(' ')}"
+    if system "vagrant plugin install #{plugins_to_install.join(' ')}"
+      exec "vagrant #{ARGV.join(' ')}"
+    else
+      abort "Installation of one or more plugins has failed. Aborting."
     end
-  end
-  if installed_plugins > 0
-    puts "Dependencies installed, please try the command again."
-    exit
   end
  
-  config.proxy.http = ENV['http_proxy']
-  config.proxy.https = ENV['https_proxy']
-  config.proxy.no_proxy = ENV['no_proxy']
-
-  #config.vm.provision "shell", path: "set-apt-mirror.sh"
-
-  config.vm.provision "docker" do |d|
-    d.post_install_provision "shell", path: "set-docker-mirror.sh"
+  config.vm.box = "ubuntu/xenial64"
+  config.vm.box_check_update = false
+  config.vbguest.auto_update = false
+  
+  config.timezone.value = :host
+  
+  if ENV["http_proxy"]
+    puts "http_proxy: " + ENV["http_proxy"]
+    config.proxy.http = ENV["http_proxy"]
+  end
+  if ENV["https_proxy"]
+    puts "https_proxy: " + ENV["https_proxy"]
+    config.proxy.https = ENV["https_proxy"]
+  end
+  if ENV["no_proxy"]
+    puts "no_proxy: " + ENV["no_proxy"]
+    config.proxy.no_proxy = ENV["no_proxy"]
   end
 
-  config.vm.define "dockerbook" do |host|
-    host.vm.box = "ubuntu/xenial64"
-    host.vm.hostname = "dockerbook"
-    #host.disksize.size = "100GB"
-    host.vm.network :private_network, ip: "10.10.10.10"
-
-    host.vm.provider "virtualbox" do |v|
+  config.vm.define "dockerbook" do |node|
+    node.vm.hostname = "dockerbook"
+    node.vm.network "private_network", ip: "10.10.10.10"
+    node.vm.provider "virtualbox" do |v|
       v.name = "dockerbook"
-      v.memory = 1024
-      v.cpus = 1
+      v.cpus = "1"
+      v.memory = "1024"
     end
 
-    #host.vm.provision "shell", path: "provision.sh"
+    node.vm.provision "docker" do |d|
+      d.post_install_provision "shell", path: "scripts/set-docker-mirror.sh"
+    end
 
-    host.vm.provision "docker" do |d|
+    node.vm.provision "shell", path: "scripts/provision.sh"
+
+    node.vm.provision "docker" do |d|
       #d.build_image "/vagrant/5/sinatra/redis", args: "-t jamtur01/redis --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
       #d.run "redis", image: "jamtur01/redis", args: "-p 6379:6379"
       #d.build_image "/vagrant/5/sinatra", args: "-t jamtur01/sinatra --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
@@ -69,10 +77,18 @@ Vagrant.configure("2") do |config|
       #d.run "nodeapp", image: "jamtur01/nodejs", args: "-p 3000:3000 --net express"
       #d.run "logstash", image: "jamtur01/logstash", args: "--volumes-from redis_primary --volumes-from nodeapp"
       #d.build_image "/vagrant/7/composeapp", args: "-t jamtur01/composeapp --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy"
-      d.build_image "/vagrant/7/consul/consul", args: "-t jamtur01/consul --build-arg http_proxy=$local_proxy --build-arg https_proxy=$local_proxy"
-      d.run "consul", image: "jamtur01/consul", args: "-p 8500:8500 -p 53:53/udp -h node1", cmd: "-server -bootstrap -ui"
+      #d.build_image "/vagrant/7/consul/consul", args: "-t jamtur01/consul --build-arg http_proxy=$local_proxy --build-arg https_proxy=$local_proxy"
+      #d.run "consul", image: "jamtur01/consul", args: "-p 8500:8500 -p 53:53/udp -h node1", cmd: "-server -bootstrap -ui"
     end
 
-    #host.vm.provision :docker_compose, yml: "/vagrant/7/composeapp/docker-compose.yml", run: "always"
+    node.vm.provision "shell", path: "scripts/install-docker-compose.sh"
+
+    #node.vm.provision "docker_compose",
+    #  compose_version: "1.16.1",
+    #  yml: "/vagrant/7/composeapp/docker-compose.yml",
+    #  rebuild: true,
+    #  run: "always"
+
+    node.vm.provision "shell", path: "scripts/bootstrap.sh"
   end
 end

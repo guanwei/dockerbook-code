@@ -1,0 +1,32 @@
+version: "2"
+services:
+  curly_agent:
+    build:
+      context: ./consul
+      args:
+        - http_proxy=${local_proxy}
+        - https_proxy=${local_proxy}
+    image: jamtur01/consul
+    hostname: curly
+    container_name: curly_agent
+    ports:
+      - "8300:8300"
+      - "8301:8301"
+      - "8301:8301/udp"
+      - "8302:8302"
+      - "8302:8302/udp"
+      - "8500:8500"
+      - "53:53/udp"
+    command: ["-server", "-advertise=10.10.10.12", "-join=10.10.10.11", "-ui"]
+
+  curly_distributed:
+    build:
+      context: ./distributed_app
+      args:
+        - http_proxy=${local_proxy}
+        - https_proxy=${local_proxy}
+    image: jamtur01/distributed_app
+    hostname: curly
+    container_name: curly_distributed
+    depends_on:
+      - curly_agent
