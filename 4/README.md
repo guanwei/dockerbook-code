@@ -166,7 +166,7 @@ $ sudo docker run -it jamtur01/test /bin/ps
 ENTRYPOINT ["/usr/sbin/nginx"]
 ```
 
-讲`-g "daemon off;"`作为参数传递给ENTRYPOINT指令
+将`-g "daemon off;"`作为参数传递给ENTRYPOINT指令
 ```
 $ sudo docker run -it jamtur01/static_web -g "daemon off;"
 ```
