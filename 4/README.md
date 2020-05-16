@@ -280,5 +280,5 @@ $ sudo docker rmi jamtur01/static_web
 
 删除所有镜像
 ```
-$ sudo docker rmi `sudo docker ps imgages -a -q`
+$ sudo docker rmi `sudo docker imgages -a -q`
 ```
