@@ -183,6 +183,7 @@ MAINTAINER James Turnbull "james@example.com"
 ENV REFRESHED_AT 2014-06-01
 
 RUN apt-get -yqq update && apt-get -yqq install redis-server redis-tools
+RUN sysctl -w vm.overcommit_memory=1
 
 EXPOSE 6379
 
