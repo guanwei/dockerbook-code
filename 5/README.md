@@ -176,6 +176,19 @@ $ mkdir sinatra/redis && cd sinatra/redis
 $ touch Dockerfile
 ```
 
+Dockerfile 内容
+```
+FROM ubuntu:14.04
+MAINTAINER James Turnbull "james@example.com"
+ENV REFRESHED_AT 2014-06-01
+
+RUN apt-get -yqq update && apt-get -yqq install redis-server redis-tools
+
+EXPOSE 6379
+
+ENTRYPOINT ["/usr/bin/redis-server"]
+```
+
 构建Redis镜像
 ```
 $ sudo docker build -t jamtur01/redis .
