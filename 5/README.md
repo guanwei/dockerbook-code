@@ -264,8 +264,9 @@ $ sudo docker run -d --net=app --name db jamtur01/redis
 链接redis容器
 ```
 $ sudo docker run -p 4567 \
-  --net=app --name webapp \
-  -v $PWD/webapp_redis:/opt/webapp jamtur01/sinatra
+  --net=app --name webapp -t -i \
+  -v $PWD/webapp_redis:/opt/webapp jamtur01/sinatra \
+  /bin/bash
 ```
 
 ### Docker用于持续集成
