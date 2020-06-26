@@ -54,7 +54,7 @@ $ rm -rf james_blog/.git
 
 创建Jekyll容器
 ```
-$ sudo docker run -v james_blog:/data --name james_blog jamtur01/jekyll
+$ sudo docker run -v $PWD/james_blog:/data --name james_blog jamtur01/jekyll
 ```
 
 卷的几个有用的特征
