@@ -304,3 +304,28 @@ $ sudo docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 #### 创建多配置作业
 
 创建`Docker_matrix_job`多配置项目，选择Git并指定测试仓库`https://github.com/jamtur01/docker-jenkins-sample.git`，点击`Add Axis`按钮，并选择`User-defined Axis`，定义名字为`OS`，值为`centos debian ubuntu`，选择`Delete workspace before build starts`在构建前删除工作空间，点击`Add Build Step`增加一个构建步骤，选择`Execute shell`，使用定义的脚本来启动测试Docker，点击`Add post-build action`加入构建后的动作，加入一个`Publish JUnit test result report`公布JUnit测试结果报告，指定`Test report XMLs`测试报告的XML文件为`spec/reports/*.xml`，最后点击Save保存作业
+
+
+### FAQ
+
+ - Q：
+ 
+```
+Step 12/15 : RUN gem install --no-rdoc --no-ri jekyll
+ ---> Running in badbe1b0e565
+ERROR:  Loading command: install (LoadError)
+        cannot load such file -- zlib
+ERROR:  While executing gem ... (NoMethodError)
+    undefined method `invoke_with_build_args' for nil:NilClass
+The command '/bin/sh -c gem install --no-rdoc --no-ri jekyll' returned a non-zero code: 1
+```
+
+ - A:
+ 
+ ```
+ Dockerfile  中增加
+ RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev
+ ```
+
+
+
