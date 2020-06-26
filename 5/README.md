@@ -95,7 +95,7 @@ RUN tar -xvzf /tmp/ruby-2.5.0.tar.gz -C /tmp/
 RUN cd /tmp/ruby-2.5.0/ && ./configure --prefix=/usr/local; make; make install
 RUN ruby -v
 
-RUN ln -s   /usr/local/bin/ruby /usr/bin/ruby
+RUN ln -sf   /usr/local/bin/ruby /usr/bin/ruby
 
 RUN gem install --no-rdoc --no-ri sinatra json redis
 
