@@ -274,7 +274,7 @@ $ sudo docker run -it --rm --volumes-from redis_primary ubuntu cat /var/log/redi
 
 运行第一个Redis副本容器
 ```
-$ sudo docker run -d -h redis_repilica1 --name redis_repilica1 --net express jamtur01/redis_replica
+$ sudo docker run -d -h redis_repilica1 --name redis_replica1 --net express jamtur01/redis_replica
 ```
 
 读取Redis副本容器的日志
