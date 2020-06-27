@@ -353,7 +353,26 @@ $ sudo docker logs -f logstash
 $ sudo docker kill -s <signal> <container>
 ```
 
+安装 nsenter
+```
+$ sudo docker run -v /usr/local/bin/:/target jpetazzo/nsenter
+```
+
 获取容器的进程ID
 ```
 $ sudo docker inspect --format '{{.State.Pid}}' <container>
 ```
+
+使用 nsenter 进入容器
+```
+$ sudo nsenter --target $PID --mount --uts --ipc --net --pid
+```
+
+使用 nsenter 在容器内执行命令
+```
+sudo nsenter --target $PID --mount --uts --ipc --net --pid ls
+```
+
+
+
+
