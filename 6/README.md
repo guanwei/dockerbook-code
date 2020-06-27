@@ -199,9 +199,10 @@ $ sudo docker port tprov
 
 创建Node.js的Dockerfile
 ```
-$ mkdir -p nodejs/nodeapp && cd nodejs
+$ mkdir -p nodejs/nodeapp && cd nodejs/nodeapp
 $ wget https://raw.githubusercontent.com/jamtur01/dockerbook-code/master/code/6/node/nodejs/nodeapp/package.json -P nodeapp
 $ wget https://raw.githubusercontent.com/jamtur01/dockerbook-code/master/code/6/node/nodejs/nodeapp/server.js -P nodeapp
+$ cd ..
 $ touch Dockerfile
 ```
 
