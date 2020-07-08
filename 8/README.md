@@ -83,7 +83,7 @@ http://docker.example.com:2375/containers/create \
 通过API创建容器，提供更多配置
 ```
 $ curl -X POST -H "Content-Type: application/json" \
-http://docker.example.com:2375/containers/create?name=jekyll" \
+"http://docker.example.com:2375/containers/create?name=jekyll" \
 -d '{
     "Image": "jamtur01/jekyll",
     "Hostname": "jekyll"
