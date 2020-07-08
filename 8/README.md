@@ -142,6 +142,8 @@ $ sudo openssl genrsa -des3 -out server-key.pem
 $ sudo openssl req -new -key server-key.pem -out server.csr
 ```
 
+注意需要设置 CN (Common Name) 为 **docker.example.com**
+
 对CSR进行签名
 ```
 $ sudo openssl x509 -req -days 365 -in server.csr -CA ca.pem \
