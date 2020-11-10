@@ -54,7 +54,7 @@ $ rm -rf james_blog/.git
 
 创建Jekyll容器
 ```
-$ sudo docker run -v james_blog:/data --name james_blog jamtur01/jekyll
+$ sudo docker run -v $PWD/james_blog:/data --name james_blog jamtur01/jekyll
 ```
 
 卷的几个有用的特征
@@ -199,9 +199,10 @@ $ sudo docker port tprov
 
 创建Node.js的Dockerfile
 ```
-$ mkdir -p nodejs/nodeapp && cd nodejs
+$ mkdir -p nodejs/nodeapp && cd nodejs/nodeapp
 $ wget https://raw.githubusercontent.com/jamtur01/dockerbook-code/master/code/6/node/nodejs/nodeapp/package.json -P nodeapp
 $ wget https://raw.githubusercontent.com/jamtur01/dockerbook-code/master/code/6/node/nodejs/nodeapp/server.js -P nodeapp
+$ cd ..
 $ touch Dockerfile
 ```
 
@@ -273,7 +274,7 @@ $ sudo docker run -it --rm --volumes-from redis_primary ubuntu cat /var/log/redi
 
 运行第一个Redis副本容器
 ```
-$ sudo docker run -d -h redis_repilica1 --name redis_repilica1 --net express jamtur01/redis_replica
+$ sudo docker run -d -h redis_replica1 --name redis_replica1 --net express jamtur01/redis_replica
 ```
 
 读取Redis副本容器的日志
@@ -352,7 +353,26 @@ $ sudo docker logs -f logstash
 $ sudo docker kill -s <signal> <container>
 ```
 
+安装 nsenter
+```
+$ sudo docker run -v /usr/local/bin/:/target jpetazzo/nsenter
+```
+
 获取容器的进程ID
 ```
 $ sudo docker inspect --format '{{.State.Pid}}' <container>
 ```
+
+使用 nsenter 进入容器
+```
+$ sudo nsenter --target $PID --mount --uts --ipc --net --pid
+```
+
+使用 nsenter 在容器内执行命令
+```
+sudo nsenter --target $PID --mount --uts --ipc --net --pid ls
+```
+
+
+
+

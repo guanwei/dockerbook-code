@@ -14,6 +14,19 @@ $ wget http://raw.githubusercontent.com/jamtur01/dockerbook-code/master/code/5/s
 $ cd ..
 ```
 
+Dockerfile 内容
+
+```
+FROM ubuntu:14.04
+MAINTAINER James Turnbull "james@example.com"
+ENV REFRESHED_AT 2014-06-01
+RUN apt-get -yqq update && apt-get -yqq install nginx
+RUN mkdir -p /var/www/html/website
+ADD nginx/global.conf /etc/nginx/conf.d/
+ADD nginx/nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+```
+
 构建新的Nginx镜像
 ```
 $ sudo docker build -t jamtur01/nginx .
@@ -63,6 +76,36 @@ $ sudo docker ps website
 $ mkdir sinatra && cd sinatra
 $ touch Dockerfile
 ```
+
+Dockerfile 内容
+
+```
+FROM ubuntu:14.04
+MAINTAINER James Turnbull "james@example.com"
+ENV REFRESHED_AT 2014-06-01
+
+RUN apt-get -yqq update && apt-get -yqq install wget curl gnupg2  libcurl3 build-essential redis-tools
+RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev
+
+RUN cd /tmp
+COPY ruby-2.5.0.tar.gz /tmp/
+#RUN wget  http://ftp.ruby-lang.org/pub/ruby/2.5/ruby-2.5.0.tar.gz
+#RUN wget  http://mirrors.nju.edu.cn/ruby/2.5/ruby-2.5.0.tar.gz
+RUN tar -xvzf /tmp/ruby-2.5.0.tar.gz -C /tmp/
+RUN cd /tmp/ruby-2.5.0/ && ./configure --prefix=/usr/local; make; make install
+RUN ruby -v
+
+RUN ln -sf   /usr/local/bin/ruby /usr/bin/ruby
+
+RUN gem install --no-rdoc --no-ri sinatra json redis
+
+RUN mkdir -p /opt/webapp
+
+EXPOSE 4567
+
+CMD [ "/opt/webapp/bin/webapp" ]
+```
+
 
 构建新的Sinatra镜像
 ```
@@ -131,6 +174,20 @@ $ chmod +x webapp_redis/bin/webapp
 ```
 $ mkdir sinatra/redis && cd sinatra/redis
 $ touch Dockerfile
+```
+
+Dockerfile 内容
+```
+FROM ubuntu:14.04
+MAINTAINER James Turnbull "james@example.com"
+ENV REFRESHED_AT 2014-06-01
+
+RUN apt-get -yqq update && apt-get -yqq install redis-server redis-tools
+RUN sysctl -w vm.overcommit_memory=1
+
+EXPOSE 6379
+
+ENTRYPOINT ["/usr/bin/redis-server"]
 ```
 
 构建Redis镜像
@@ -207,8 +264,9 @@ $ sudo docker run -d --net=app --name db jamtur01/redis
 链接redis容器
 ```
 $ sudo docker run -p 4567 \
-  --net=app --name webapp \
-  -v $PWD/webapp_redis:/opt/webapp jamtur01/sinatra
+  --net=app --name webapp -t -i \
+  -v $PWD/webapp_redis:/opt/webapp jamtur01/sinatra \
+  /bin/bash
 ```
 
 ### Docker用于持续集成
@@ -246,3 +304,28 @@ $ sudo docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 #### 创建多配置作业
 
 创建`Docker_matrix_job`多配置项目，选择Git并指定测试仓库`https://github.com/jamtur01/docker-jenkins-sample.git`，点击`Add Axis`按钮，并选择`User-defined Axis`，定义名字为`OS`，值为`centos debian ubuntu`，选择`Delete workspace before build starts`在构建前删除工作空间，点击`Add Build Step`增加一个构建步骤，选择`Execute shell`，使用定义的脚本来启动测试Docker，点击`Add post-build action`加入构建后的动作，加入一个`Publish JUnit test result report`公布JUnit测试结果报告，指定`Test report XMLs`测试报告的XML文件为`spec/reports/*.xml`，最后点击Save保存作业
+
+
+### FAQ
+
+ - Q：
+ 
+```
+Step 12/15 : RUN gem install --no-rdoc --no-ri jekyll
+ ---> Running in badbe1b0e565
+ERROR:  Loading command: install (LoadError)
+        cannot load such file -- zlib
+ERROR:  While executing gem ... (NoMethodError)
+    undefined method `invoke_with_build_args' for nil:NilClass
+The command '/bin/sh -c gem install --no-rdoc --no-ri jekyll' returned a non-zero code: 1
+```
+
+ - A:
+ 
+ ```
+ Dockerfile  中增加
+ RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev
+ ```
+
+
+

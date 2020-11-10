@@ -166,7 +166,7 @@ $ sudo docker run -it jamtur01/test /bin/ps
 ENTRYPOINT ["/usr/sbin/nginx"]
 ```
 
-讲`-g "daemon off;"`作为参数传递给ENTRYPOINT指令
+将`-g "daemon off;"`作为参数传递给ENTRYPOINT指令
 ```
 $ sudo docker run -it jamtur01/static_web -g "daemon off;"
 ```
@@ -280,5 +280,5 @@ $ sudo docker rmi jamtur01/static_web
 
 删除所有镜像
 ```
-$ sudo docker rmi `sudo docker ps imgages -a -q`
+$ sudo docker rmi `sudo docker imgages -a -q`
 ```
